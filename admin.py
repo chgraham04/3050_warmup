@@ -4,9 +4,10 @@ def init_firestore_client_application_default():
     from firebase_admin import credentials
     from firebase_admin import firestore
 
-    # Use the application default credentials.
-    cred = credentials.ApplicationDefault()
+    # Use the sdk credentials
+    cred = credentials.Certificate('sdk_key.json')
 
     firebase_admin.initialize_app(cred)
     db = firestore.client()
+
     # [END init_firestore_client_application_default]
