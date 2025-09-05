@@ -1,11 +1,12 @@
 class Vehicle:
     # constructor
-    def __init__(self, vin, price, mileage, make, model, trim=None):
+    def __init__(self, vin, price, mileage, make, model, type, trim=None):
         self.vin = vin
         self.price = price
         self.mileage = mileage
         self.make = make
         self.model = model
+        self.type = type
         self.trim = trim
 
     @staticmethod
@@ -17,6 +18,7 @@ class Vehicle:
             mileage=source.get("mileage"),
             make=source.get("make"),
             model=source.get("model"),
+            type=source.get("body_type"),
             trim=source.get("trim")
         )
 
@@ -30,5 +32,6 @@ class Vehicle:
             "mileage": self.mileage,
             "make": self.make,
             "model": self.model,
+            "type" :self.type,
             "trim": self.trim
         }
