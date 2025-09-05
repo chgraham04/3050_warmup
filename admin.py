@@ -1,4 +1,5 @@
 import json
+import sys
 from vehicle import Vehicle
 
 def open_firestore_db():
@@ -17,10 +18,11 @@ def open_firestore_db():
 
 def upload_data():
     firestore_db = open_firestore_db()
-
-    with open('top_40_used_car_listings.json', encoding = 'utf8') as f:
-        usedCarData = json.load(f)
-        print ("----------------\n"
+    json_file = sys.argv[1]
+    try:
+        with open(json_file, encoding = 'utf8') as f:
+            usedCarData = json.load(f)
+            print ("----------------\n"
             "----------------\n"
             "--LOAD SUCCESS--\n"
             "--BEGIN UPLOAD--\n"
@@ -44,6 +46,10 @@ def upload_data():
             "-----UPLOAD-----\n"  
             "----------------\n"
             "----------------\n")
+    except FileNotFoundError:
+        print(f"Error:File '{json_file} not found.")
+        
+        
 
 if __name__ == "__main__":
     upload_data()
