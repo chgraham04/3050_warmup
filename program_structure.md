@@ -5,12 +5,11 @@
 - errors.py ? 
 
 **Data Initialization**
-- firestore_client.py ?
-- loader.py ?
+- admin.py
 
 **CLI**
-- admin_cli.py
-- query_cli.py
+- execute_cli.py
+- cli_helper.py
 
 **Query Execution**
 - parser.py ?

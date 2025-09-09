@@ -2,13 +2,14 @@ import json
 import sys
 from vehicle import Vehicle
 
+
 def open_firestore_db():
     import firebase_admin
     from firebase_admin import credentials
     from firebase_admin import firestore
 
     # Use the sdk credentials
-    cred = credentials.Certificate('../sdk_key.json') # grabs key from parent local folder
+    cred = credentials.Certificate('sdk_key.json') # grabs key from parent local folder
 
     # Initialize access to firestore database
     firebase_admin.initialize_app(cred)

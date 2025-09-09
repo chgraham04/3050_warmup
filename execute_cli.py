@@ -4,7 +4,7 @@ call functions defined in cli_helper.py
 """
 
 from cli_helper import open_firestore_db, run_query, format_vehicle, help_message, welcome_messsage
-
+ 
 def print_results(rows):
     total = len(rows)
     if total == 0:
