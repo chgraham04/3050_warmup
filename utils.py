@@ -97,3 +97,14 @@ Notes:
   • String values can be quoted; unquoted strings are accepted as-is.
   • For numeric fields, values must be valid integers.
 """
+
+WELCOME_MESSAGE = """
+Welcome to our navigational interface for used car shopping! 
+
+To get starrted querying, type "help" to display all features of the query language. When you are finished, simply type
+"quit" or "exit" to terminate the program.
+
+MAKE SURE your firestore cloud key is titled "sdk_key.json" and is located inside the parent directory of this project.
+
+Happy Querying :)
+"""
