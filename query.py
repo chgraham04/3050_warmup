@@ -24,8 +24,9 @@ def parse(query):
     operator = pp.oneOf(utils.operators)
 
     word_value = pp.Word(pp.alphanums)
+    quoted_word = pp.QuotedString('"') | pp.QuotedString("'")
     num_value = pp.Word(pp.nums)
-    val = word_value | num_value
+    val = word_value | num_value | quoted_word
 
     # expression format
     expression = field + operator + val
@@ -33,3 +34,4 @@ def parse(query):
 
 
 print(parse("price <= 16500"))
+print(parse('type = "SUV"'))

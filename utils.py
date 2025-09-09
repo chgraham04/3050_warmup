@@ -28,6 +28,7 @@ operators = {
     "<=": {"fn": _cmp_le, "allowed_types": NUMERIC},
     ">=": {"fn": _cmp_ge, "allowed_types": NUMERIC},
     "=":  {"fn": _cmp_eq, "allowed_types": NUMERIC | STRING},
+    "==": {"fn": _cmp_eq, "allowed_types": NUMERIC | STRING},
 }
 
 logical_operators = {
