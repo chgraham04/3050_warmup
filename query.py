@@ -15,31 +15,21 @@ def get_db_info():
     # return data from firestore
     return vehicles
 
+# this function parses a basic expression of the form
+# EXPRESSION := <field> <op> <value>
+# ex/ "price <= 16500" --> ['price', '<=', '16500']
+def parse(query):
+    # define parts of grammar:
+    field = pp.oneOf(utils.fields)
+    operator = pp.oneOf(utils.operators)
 
-def get_query():
-    grammar = pp.oneOf(utils.fields) + pp.oneOf(utils.operators) + pp.Word(pp.nums)
-    query = "mileage >= 55000"
-    print(grammar.parseString(query))
-    # another_one = "make = “Toyota”"
-    # print(grammar.parseString(another_one))
-    # operatorOr = pp.Forward()
+    word_value = pp.Word(pp.alphanums)
+    num_value = pp.Word(pp.nums)
+    val = word_value | num_value
 
-get_query()
+    # expression format
+    expression = field + operator + val
+    return expression.parseString(query)
 
-# CONDITION := <field> <op> <number>
-#              <field> <op> <word>
 
-# def evaluate_field(field):
-#     if field in utils.fields:
-#         return field
-#     else:
-#         return set()
-# def evaluate_operator(operator):
-#     if operator in utils.operators:
-#         return operator
-#     else:
-#         return set()
-# def evaluate_word(word):
-#     #query database and see if the word acc exists
-#     pass
-
+print(parse("price <= 16500"))
