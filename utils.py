@@ -22,7 +22,7 @@ def _or(a, b):     return a or b
 NUMERIC = {"int"}      # operators valid for numbers
 STRING  = {"string"}   # operators valid for strings
 
-operators = {
+comparison_operators = {
     "<":  {"fn": _cmp_lt, "allowed_types": NUMERIC},
     ">":  {"fn": _cmp_gt, "allowed_types": NUMERIC},
     "<=": {"fn": _cmp_le, "allowed_types": NUMERIC},
@@ -30,7 +30,6 @@ operators = {
     "=":  {"fn": _cmp_eq, "allowed_types": NUMERIC | STRING},
     "==": {"fn": _cmp_eq, "allowed_types": NUMERIC | STRING},
 }
-
 logical_operators = {
     "&":  {"fn": _and,    "is_logical": True},
     "||": {"fn": _or,     "is_logical": True},
@@ -102,7 +101,7 @@ Notes:
 WELCOME_MESSAGE = """
 Welcome to our navigational interface for used car shopping! 
 
-To get starrted querying, type "help" to display all features of the query language. When you are finished, simply type
+To get started querying, type "help" to display all features of the query language. When you are finished, simply type
 "quit" or "exit" to terminate the program.
 
 MAKE SURE your firestore cloud key is titled "sdk_key.json" and is located inside the parent directory of this project.
