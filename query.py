@@ -4,14 +4,11 @@ import pyparsing as pp
 # STATEMENT := <field> <comparison-op> <value>
 #       statements use a comparison operator between
 #       a certain field and a value to test against
-# EXPRESSION := <lhs-stmt> <logical-op> <rhs-stmt>
-#       expressions are defined as two statements
-#       separated by an "and" or an "or"
-
 def build_stmt():
     field = pp.oneOf(utils.fields)
     operator = pp.oneOf(utils.comparison_operators)
 
+    # need to accept different types of value inputs
     word_value = pp.Word(pp.alphanums)
     quoted_word = pp.QuotedString('"') | pp.QuotedString("'")
     num_value = pp.Word(pp.nums)
@@ -21,11 +18,15 @@ def build_stmt():
     stmt = pp.Group(field + operator + val)
     return stmt
 
+# EXPRESSION := <lhs-stmt> <logical-op> <rhs-stmt>
+#       expressions are defined as two statements
+#       separated by an "and" or an "or"
 def build_expr():
     # define expression structure
     _and = pp.Literal("&") | pp.CaselessKeyword("and")
     _or = pp.Literal("||") | pp.CaselessKeyword("or")
 
+    # expr format
     expr = (build_stmt().set_results_name("left") +
             (_and | _or).set_results_name("op") +
             build_stmt().set_results_name("right"))
@@ -56,4 +57,4 @@ print(parse_query('make = "Toyota"'))
 print(parse_query('mileage >= 40000'))
 
 
-# TODO: build predicate from the parsed string
+# TODO: build predicate and process the parsed string
