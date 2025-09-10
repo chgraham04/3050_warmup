@@ -56,5 +56,7 @@ print(parse_query('type = "SUV"'))
 print(parse_query('make = "Toyota"'))
 print(parse_query('mileage >= 40000'))
 
+parsed = parse_query('model = Rogue')
+print(parsed)
 
 # TODO: build predicate and process the parsed string

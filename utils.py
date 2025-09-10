@@ -7,6 +7,7 @@ fields = {
     "make":    {"type": "string", "coerce": str},
     "model":   {"type": "string", "coerce": str},
     "type":    {"type": "string", "coerce": str},
+    # "trim":    {"type": "string" | None, "coerce": str | None},
     "help":    {"command": True}
 }
 
@@ -81,6 +82,7 @@ Fields:
   - make (string)
   - model (string)
   - type (string)
+  - trim (string)    (optional value)
 
 Operators:
   - <, >, <=, >=     (numeric comparisons: price, mileage)

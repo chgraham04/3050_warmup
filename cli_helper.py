@@ -140,6 +140,7 @@ def fetch_all_vehicles(db):
         vehicles.append(data)
     return vehicles
 
+# run query should be modified to work with funct in query.py
 def run_query(db, query_str):
     predicate = build_predicate(query_str)
     rows = fetch_all_vehicles(db)
