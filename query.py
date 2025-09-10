@@ -1,46 +1,14 @@
 import utils
-from admin import open_firestore_db
 import pyparsing as pp
 
-from utils import comparison_operators
+# STATEMENT := <field> <comparison-op> <value>
+#       statements use a comparison operator between
+#       a certain field and a value to test against
+# EXPRESSION := <lhs-stmt> <logical-op> <rhs-stmt>
+#       expressions are defined as two statements
+#       separated by an "and" or an "or"
 
-
-def get_db_info():
-    db = open_firestore_db()
-
-    # this just gets data from firestore
-    vehicles_ref = db.collection("Vehicles")
-    vehicles = vehicles_ref.get()
-
-    # print the vehicle info
-    for vehicle in vehicles:
-        print(vehicle.to_dict())
-    # return data from firestore
-    return vehicles
-
-# this function parses a basic expression of the form
-# EXPRESSION := <field> <op> <value>
-# ex/ "price <= 16500" --> ['price', '<=', '16500']
-def parse_stmt(query_stmt):
-    # define parts of grammar:
-    field = pp.oneOf(utils.fields)
-    operator = pp.oneOf(utils.comparison_operators)
-
-    word_value = pp.Word(pp.alphanums)
-    quoted_word = pp.QuotedString('"') | pp.QuotedString("'")
-    num_value = pp.Word(pp.nums)
-    val = word_value | num_value | quoted_word
-
-    # expression format
-    expression = field + operator + val
-    return expression.parseString(query_stmt)
-
-print(parse_stmt("price <= 16500"))
-print(parse_stmt('type = "SUV"'))
-
-""" SCRATCH WORK """
-# define parser structure
-def build_parser():
+def build_stmt():
     field = pp.oneOf(utils.fields)
     operator = pp.oneOf(utils.comparison_operators)
 
@@ -51,27 +19,41 @@ def build_parser():
 
     # stmt format
     stmt = pp.Group(field + operator + val)
+    return stmt
 
+def build_expr():
     # define expression structure
     _and = pp.Literal("&") | pp.CaselessKeyword("and")
     _or = pp.Literal("||") | pp.CaselessKeyword("or")
-    # and takes precedence over or
-    expr = stmt("left") + (_and | _or) + stmt("right")
+
+    expr = (build_stmt().set_results_name("left") +
+            (_and | _or).set_results_name("op") +
+            build_stmt().set_results_name("right"))
     return expr
 
+def parse_stmt(query):
+    stmt = build_stmt()
+    return stmt.parse_string(query, parseAll=True)
 
-
-# overall format of parser
-# EXPRESSION := <lhs-stmt> <logical-op> <rhs-stmt>
-# STATEMENT := <field> <comparison-op> <value>
-# here I am defining an expression to be two statements
-# separated by an "and" or an "or"
 def parse_expr(query):
-    p = build_parser()
+    expr = build_expr()
+    return expr.parse_string(query, parseAll=True)
 
-    return p.parseString(query, parseAll=True)
 
-print(parse_expr('type = "SUV" || type = "Truck"'))
-print(parse_expr('price < 25000 & make = "Toyota"'))
+def parse_query(query):
+    try:
+        stmt = parse_stmt(query)
+        return stmt
+    except pp.ParseException as e:
+        expr = parse_expr(query)
+        return expr
 
-print(parse_expr('make = "Toyota"'))
+# testing stuff
+print(parse_query('type = "SUV" || type = "Truck"'))
+print(parse_query('price < 25000 & make = "Toyota"'))
+print(parse_query('type = "SUV"'))
+print(parse_query('make = "Toyota"'))
+print(parse_query('mileage >= 40000'))
+
+
+# TODO: build predicate from the parsed string
