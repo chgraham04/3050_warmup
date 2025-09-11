@@ -40,6 +40,8 @@ def test_restricted_ops():
         'price - 3000',
         'price * 3000',
         'price / 3000',
+        'price & 3000', # stmts should not have logical ops
+        'price || 3000',
     ]
     # none of these operators should be parse-able
     for stmt in stmts_with_restricted_ops:
@@ -68,6 +70,21 @@ def test_bad_field():
 
 # do one with a bad value as input
 # TODO: make sure that the value entered is reasonable
+def test_bad_value():
+    bad_value_stmts = [
+        'price = money',
+        'make = 400000'
+    ]
+    for stmt in bad_value_stmts:
+        try:
+            result = parse_query(stmt)
+            field = result.field
+            op = result.cmp_op
+            val = result.value
+            print(field + '\n' + op + '\n' + val)
+        except pp.ParseException:
+            pass
+
 # TODO: make the optional field functional
 
 test_stmts = [

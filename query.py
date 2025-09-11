@@ -15,7 +15,9 @@ def build_stmt():
     val = word_value | num_value | quoted_word
 
     # stmt format
-    stmt = pp.Group(field + operator + val)
+    stmt = pp.Group(field.set_results_name("field") +
+                    operator.set_results_name("cmp_op") +
+                    val.setResultsName("value"))
     return stmt
 
 # EXPRESSION := <lhs-stmt> <logical-op> <rhs-stmt>
