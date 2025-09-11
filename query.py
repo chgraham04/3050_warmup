@@ -22,7 +22,6 @@ def build_stmt():
 #       expressions are defined as two statements
 #       separated by an "and" or an "or"
 def build_expr():
-    # define expression structure
     _and = pp.Literal("&") | pp.CaselessKeyword("and")
     _or = pp.Literal("||") | pp.CaselessKeyword("or")
 
@@ -44,19 +43,16 @@ def parse_expr(query):
 def parse_query(query):
     try:
         stmt = parse_stmt(query)
-        return stmt
+        return isolate_parsed_stmt(stmt)
     except pp.ParseException as e:
         expr = parse_expr(query)
         return expr
 
-# testing stuff
-print(parse_query('type = "SUV" || type = "Truck"'))
-print(parse_query('price < 25000 & make = "Toyota"'))
-print(parse_query('type = "SUV"'))
-print(parse_query('make = "Toyota"'))
-print(parse_query('mileage >= 40000'))
-
-parsed = parse_query('model = Rogue')
-print(parsed)
+# When you want to get just one side of an expression,
+# or have a single stmt that doesn't need to be w/in
+# a bigger list
+# parsed_stmt is the return from parse_stmt
+def isolate_parsed_stmt(parsed_stmt):
+    return parsed_stmt[0]
 
 # TODO: build predicate and process the parsed string
