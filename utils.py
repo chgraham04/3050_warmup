@@ -64,10 +64,10 @@ def operator_supported_for(field_name, op):
     meta = fields.get(field_name)
     if not meta:
         return False
-    opmeta = operators.get(op)
+    opmeta = comparison_operators.get(op)
     if not opmeta:
         return False
-    if opmeta.get("is_logical"):
+    if logical_operators.get(op):
         return True
     allowed = opmeta.get("allowed_types")
     return meta["type"] in allowed if allowed else False

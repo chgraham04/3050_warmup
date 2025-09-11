@@ -1,6 +1,8 @@
 from query import parse_query, parse_stmt, isolate_parsed_stmt
 import pyparsing as pp
 
+from utils import operator_supported_for
+
 """ QUOTATION MARK TESTS """
 # Check if the parser can handle inputs with quotation marks,
 # and if they have quotation marks, that they are seen as
@@ -68,22 +70,21 @@ def test_bad_field():
     print("PASSED test_bad_field test")
 
 
-# do one with a bad value as input
-# TODO: make sure that the value entered is reasonable
-def test_bad_value():
+# make sure that the value entered is of reasonable type
+def test_invalid_field():
     bad_value_stmts = [
         'price = money',
-        'make = 400000'
+        'make = 400000',
     ]
     for stmt in bad_value_stmts:
-        try:
-            result = parse_query(stmt)
-            field = result.field
-            op = result.cmp_op
-            val = result.value
-            print(field + '\n' + op + '\n' + val)
-        except pp.ParseException:
-            pass
+        result = parse_query(stmt)
+        op = result.cmp_op
+        val = result.value
+        # there should be an error for those statements
+        if operator_supported_for(val, op):
+            raise Exception("FAILED invalid/mismatched field type test\n")
+    print("PASSED test_invalid_field test")
+
 
 # TODO: make the optional field functional
 
