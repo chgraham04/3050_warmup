@@ -180,7 +180,7 @@ def format_vehicle(v):
     vtype = v.get("type", "")
     trim  = v.get("trim", "")
     vin   = v.get("vin", "")
-    return f"{make} {model} | ${price} | {mileage} mi | {trim or ''} | {vtype} | VIN: {vin}"
+    return f"| {make + ' ' + model:<23} | {price:<9} | {mileage:<12} | {trim or '':<11} | {vtype:<12} | {vin:<20} |"
 
 # display messages
 def help_message():
