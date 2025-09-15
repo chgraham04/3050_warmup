@@ -32,8 +32,11 @@ comparison_operators = {
     "==": {"fn": _cmp_eq, "allowed_types": NUMERIC | STRING},
 }
 logical_operators = {
-    "&":  {"fn": _and,    "is_logical": True},
-    "||": {"fn": _or,     "is_logical": True},
+    "&":   {"fn": _and, "is_logical": True},
+    "&&":  {"fn": _and, "is_logical": True},
+    "and": {"fn": _and, "is_logical": True},
+    "||":  {"fn": _or,  "is_logical": True},
+    "or":  {"fn": _or,  "is_logical": True},
 }
 
 # error catches
@@ -87,8 +90,8 @@ Fields:
 Operators:
   - <, >, <=, >=     (numeric comparisons: price, mileage)
   - =                (numeric or string equality)
-  - &                (logical AND between conditions)
-  - ||               (logical OR between conditions)
+  - &, and           (logical AND between conditions)
+  - ||, or            (logical OR between conditions)
 
 Examples:
   price >= 12000 & mileage < 90000

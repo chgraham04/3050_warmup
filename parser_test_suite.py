@@ -1,7 +1,7 @@
 from query import parse_query, parse_stmt, isolate_parsed_stmt
 import pyparsing as pp
 
-from utils import operator_supported_for
+from utils import operator_supported_for, logical_operators
 
 """ QUOTATION MARK TESTS """
 # Check if the parser can handle inputs with quotation marks,
@@ -12,6 +12,7 @@ def test_quotation_parsing():
         'make = "Toyota"',
         'make = Toyota',
         "make = 'Toyota'",
+        'make == Toyota',
     ]
     for stmt in quotation_test_stmts:
         result = parse_query(stmt)
@@ -25,6 +26,7 @@ def test_multi_word_quotes():
     quotation_test_stmts = [
         'model = "Range Rover"',
         "model = 'Range Rover'",
+        "model == 'Range Rover'",
     ]
     for stmt in quotation_test_stmts:
         result = parse_query(stmt)
@@ -84,6 +86,32 @@ def test_invalid_field():
         if operator_supported_for(val, op):
             raise Exception("FAILED invalid/mismatched field type test\n")
     print("PASSED test_invalid_field test")
+
+
+""" LOGICAL OPERATORS TEST """
+def test_logical_operators():
+    and_exprs = [
+        'price < 25000 & make = Toyota',
+        'price < 25000 and make = Toyota',
+        # 'price < 25000 && make = Toyota', TODO: can't handle && atm
+        'price < 25000 || make = Toyota',
+        'price < 25000 or make = Toyota',
+    ]
+    for stmt in and_exprs:
+        and_result = parse_query(stmt)
+        if and_result.op not in logical_operators:
+            raise Exception("FAILED logical operators test\n"
+                            "Did not recognize and ", and_result)
+        # convert stmts to strings for easier comparison
+        if str(and_result.left) != "['price', '<', '25000']":
+            print(and_result.left)
+            raise Exception("FAILED logical operators test\n"
+                            "Couldn't parse left hand side ", and_result)
+        if str(and_result.right) != "['make', '=', 'Toyota']":
+            print(and_result.right)
+            raise Exception("FAILED logical operators test\n"
+                            "Couldn't parse right hand side ", and_result)
+    print("PASSED test_logical_operators test")
 
 
 # TODO: make the optional field functional

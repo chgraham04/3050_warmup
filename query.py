@@ -24,7 +24,7 @@ def build_stmt():
 #       expressions are defined as two statements
 #       separated by an "and" or an "or"
 def build_expr():
-    _and = pp.Literal("&") | pp.CaselessKeyword("and")
+    _and = pp.Literal("&") | pp.Literal("&&") | pp.CaselessKeyword("and")
     _or = pp.Literal("||") | pp.CaselessKeyword("or")
 
     # expr format
