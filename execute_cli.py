@@ -11,8 +11,11 @@ def print_results(rows):
         print("No results.")
         return
     print(f"{total} result(s):")
+    print(f"  | {"Make & Model":<23} | {"Price ($)":<9} | {"Mileage (mi)":<12} | {"Trim":<11} | {"Type":<12} | {"VIN":<20} |")
+    print("  " + "-" * 106)
     for r in rows:
         print("  " + format_vehicle(r))
+    print("  " + "-" * 106)
 
 def execute_cli():
     db = open_firestore_db()
