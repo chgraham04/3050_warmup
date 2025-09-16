@@ -10,32 +10,6 @@ import pyparsing as pp
 from utils import fields, operators, exceptions, coerce_param, operator_supported_for, HELP_TEXT, WELCOME_MESSAGE
 
 """
-DB CONNECT
-"""
-
-def find_sdk_key(filename="sdk_key.json"):
-    """
-    Look ONLY in the directory where this file (cli_helper.py) lives.
-    """
-    import os
-    here = os.path.dirname(os.path.abspath(__file__))
-    auth_key = os.path.join(here, filename)
-    if os.path.isfile(auth_key):
-        return auth_key
-    raise FileNotFoundError(f"Expected '{filename}' to be in: {here}")
-
-def open_firestore_db():
-    import firebase_admin
-    from firebase_admin import credentials, firestore
-
-    if not firebase_admin._apps:
-        key_path = find_sdk_key()
-        credential = credentials.Certificate(key_path)
-        firebase_admin.initialize_app(credential)
-
-    return firestore.client()
-
-"""
 PYPARSING TOKENS
 """
 # base tokens
@@ -166,6 +140,7 @@ def fetch_all_vehicles(db):
         vehicles.append(data)
     return vehicles
 
+# run query should be modified to work with funct in query.py
 def run_query(db, query_str):
     predicate = build_predicate(query_str)
     rows = fetch_all_vehicles(db)

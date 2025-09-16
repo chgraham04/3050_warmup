@@ -1,35 +1,60 @@
 import utils
-from admin import open_firestore_db
 import pyparsing as pp
 
-def get_db_info():
-    db = open_firestore_db()
-
-    # this just gets data from firestore
-    vehicles_ref = db.collection("Vehicles")
-    vehicles = vehicles_ref.get()
-
-    # print the vehicle info
-    for vehicle in vehicles:
-        print(vehicle.to_dict())
-    # return data from firestore
-    return vehicles
-
-# this function parses a basic expression of the form
-# EXPRESSION := <field> <op> <value>
-# ex/ "price <= 16500" --> ['price', '<=', '16500']
-def parse(query):
-    # define parts of grammar:
+# STATEMENT := <field> <comparison-op> <value>
+#       statements use a comparison operator between
+#       a certain field and a value to test against
+def build_stmt():
     field = pp.oneOf(utils.fields)
-    operator = pp.oneOf(utils.operators)
+    operator = pp.oneOf(utils.comparison_operators)
 
+    # need to accept different types of value inputs
     word_value = pp.Word(pp.alphanums)
+    quoted_word = pp.QuotedString('"') | pp.QuotedString("'")
     num_value = pp.Word(pp.nums)
-    val = word_value | num_value
+    val = word_value | num_value | quoted_word
 
-    # expression format
-    expression = field + operator + val
-    return expression.parseString(query)
+    # stmt format
+    stmt = pp.Group(field.set_results_name("field") +
+                    operator.set_results_name("cmp_op") +
+                    val.setResultsName("value"))
+    return stmt
+
+# EXPRESSION := <lhs-stmt> <logical-op> <rhs-stmt>
+#       expressions are defined as two statements
+#       separated by an "and" or an "or"
+def build_expr():
+    _and = pp.Literal("&") | pp.Literal("&&") | pp.CaselessKeyword("and")
+    _or = pp.Literal("||") | pp.CaselessKeyword("or")
+
+    # expr format
+    expr = (build_stmt().set_results_name("left") +
+            (_and | _or).set_results_name("op") +
+            build_stmt().set_results_name("right"))
+    return expr
+
+def parse_stmt(query):
+    stmt = build_stmt()
+    return stmt.parse_string(query, parseAll=True)
+
+def parse_expr(query):
+    expr = build_expr()
+    return expr.parse_string(query, parseAll=True)
 
 
-print(parse("price <= 16500"))
+def parse_query(query):
+    try:
+        stmt = parse_stmt(query)
+        return isolate_parsed_stmt(stmt)
+    except pp.ParseException as e:
+        expr = parse_expr(query)
+        return expr
+
+# When you want to get just one side of an expression,
+# or have a single stmt that doesn't need to be w/in
+# a bigger list
+# parsed_stmt is the return from parse_stmt
+def isolate_parsed_stmt(parsed_stmt):
+    return parsed_stmt[0]
+
+# TODO: build predicate and process the parsed string

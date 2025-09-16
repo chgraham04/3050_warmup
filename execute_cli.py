@@ -2,9 +2,9 @@
 Organize logical navigation through CLI
 call functions defined in cli_helper.py
 """
+from admin import open_firestore_db
+from cli_helper import run_query, format_vehicle, help_message, welcome_messsage
 
-from cli_helper import open_firestore_db, run_query, format_vehicle, help_message, welcome_messsage
- 
 def print_results(rows):
     total = len(rows)
     if total == 0:
