@@ -37,13 +37,14 @@ def test_multi_word_quotes():
     print("PASSED check_multi_word_quotes test")
 
 
-""" BAD INPUT TESTS """
-def test_restricted_ops():
+""" MIS-MATCHED INPUT/OPERATOR TESTS """
+def test_stmt_restricted_ops():
     stmts_with_restricted_ops = [
         'price + 3000',
         'price - 3000',
         'price * 3000',
         'price / 3000',
+        'price % 3000',
         'price & 3000', # stmts should not have logical ops
         'price || 3000',
     ]
@@ -52,12 +53,31 @@ def test_restricted_ops():
         try:
             result = parse_query(stmt)
             raise Exception("FAILED restricted comparison operators test\n"
-                            "Did not flag restricted operators")
+                            "Did not flag statement with restricted operator")
         except pp.ParseException:
             pass
     print("PASSED test_restricted_ops test")
 
-def test_bad_field():
+def test_expr_restricted_ops():
+    exprs_with_restricted_ops = [
+        'type = SUV < mileage < 90000', # exprs should not allow comparison ops
+        'type = SUV <= mileage < 90000',
+        'type = SUV > mileage < 90000',
+        'type = SUV >= mileage < 90000',
+        'type = SUV == mileage < 90000',
+        'type = SUV = mileage < 90000',
+    ]
+    for expr in exprs_with_restricted_ops:
+        try:
+            result = parse_query(expr)
+            raise Exception("FAILED restricted operator for expressions\n"
+                            "Did not expression with comparison operator: ",
+                            result.op)
+        except pp.ParseException:
+            pass
+    print("PASSED test_expr_restricted_ops test")
+
+def test_invalid_field():
     stmts_with_bad_field = [
         'car = Kia',
         'mph > 90',
@@ -73,7 +93,7 @@ def test_bad_field():
 
 
 # make sure that the value entered is of reasonable type
-def test_invalid_field():
+def test_invalid_value():
     bad_value_stmts = [
         'price = money',
         'make = 400000',
@@ -93,7 +113,6 @@ def test_logical_operators():
     and_exprs = [
         'price < 25000 & make = Toyota',
         'price < 25000 and make = Toyota',
-        # 'price < 25000 && make = Toyota', TODO: can't handle && atm
         'price < 25000 || make = Toyota',
         'price < 25000 or make = Toyota',
     ]
@@ -114,7 +133,6 @@ def test_logical_operators():
     print("PASSED test_logical_operators test")
 
 
-# TODO: make the optional field functional
 
 test_stmts = [
     'type = "SUV"',
