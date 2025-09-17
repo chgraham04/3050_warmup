@@ -1,5 +1,6 @@
-import utils
 import pyparsing as pp
+import utils
+
 
 # STATEMENT := <field> <comparison-op> <value>
 #       statements use a comparison operator between
@@ -24,7 +25,7 @@ def build_stmt():
 #       expressions are defined as two statements
 #       separated by an "and" or an "or"
 def build_expr():
-    _and = pp.Literal("&") | pp.Literal("&&") | pp.CaselessKeyword("and")
+    _and = pp.Literal("&") | pp.CaselessKeyword("and")
     _or = pp.Literal("||") | pp.CaselessKeyword("or")
 
     # expr format
@@ -46,7 +47,7 @@ def parse_query(query):
     try:
         stmt = parse_stmt(query)
         return isolate_parsed_stmt(stmt)
-    except pp.ParseException as e:
+    except pp.ParseException:
         expr = parse_expr(query)
         return expr
 

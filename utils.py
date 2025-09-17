@@ -33,7 +33,6 @@ comparison_operators = {
 }
 logical_operators = {
     "&":   {"fn": _and, "is_logical": True},
-    "&&":  {"fn": _and, "is_logical": True},
     "and": {"fn": _and, "is_logical": True},
     "||":  {"fn": _or,  "is_logical": True},
     "or":  {"fn": _or,  "is_logical": True},

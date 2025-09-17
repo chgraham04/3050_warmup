@@ -16,7 +16,7 @@ def test_quotation_parsing():
     ]
     for stmt in quotation_test_stmts:
         result = parse_query(stmt)
-        # the parsed statement should
+        # all of these parsed stmts should parse value to same thing
         if result[-1] != 'Toyota':
             raise Exception("FAILED check_quotation_parsing test\n"
                             "Could not recognize quotation marks")
@@ -30,7 +30,7 @@ def test_multi_word_quotes():
     ]
     for stmt in quotation_test_stmts:
         result = parse_query(stmt)
-        # the parsed statement should
+        # program should recognize multi-word values using any quotation marks
         if result[-1] != 'Range Rover':
             raise Exception("FAILED multi-word value \n"
                             "Could not recognize object in quotation marks")
