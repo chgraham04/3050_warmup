@@ -17,8 +17,9 @@ def build_stmt():
     val = word_value | num_value | quoted_word
 
     # stmt format
-    stmt = pp.Group(field.set_results_name("field") +
-                    operator.set_results_name("cmp_op") +
+    # pretty sure this is wrong syntax
+    stmt = pp.Group(field.setResultsName("field") +
+                    operator.setResultsName("cmp_op") +
                     val.setResultsName("value"))
 
     # allows unique error messages to be thrown
@@ -61,9 +62,9 @@ def build_expr():
     _or = pp.Literal("||") | pp.CaselessKeyword("or")
 
     # expr format
-    expr = (build_stmt().set_results_name("left") +
-            (_and | _or).set_results_name("op") +
-            build_stmt().set_results_name("right"))
+    expr = (build_stmt().setResultsName("left") +
+            (_and | _or).setResultsName("op") +
+            build_stmt().setResultsName("right"))
 
     def validate_expr(tokens):
         # if either side raised during its own validation, pyparsing will surface it.
@@ -89,7 +90,7 @@ def parse_query(query):
     try:
         stmt = parse_stmt(query)
         return isolate_parsed_stmt(stmt)
-    except pp.ParseException:
+    except Exception:
         expr = parse_expr(query)
         return expr
 
