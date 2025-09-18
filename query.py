@@ -6,8 +6,9 @@ import utils
 #       statements use a comparison operator between
 #       a certain field and a value to test against
 def build_stmt():
-    field = pp.oneOf(utils.fields)
-    operator = pp.oneOf(utils.comparison_operators)
+    # oneOf cannot process dictionaries, list conversion needed
+    field = pp.oneOf(list(utils.fields.keys()))
+    operator = pp.oneOf(list(utils.comparison_operators.keys()))
 
     # need to accept different types of value inputs
     word_value = pp.Word(pp.alphanums)
@@ -19,6 +20,37 @@ def build_stmt():
     stmt = pp.Group(field.set_results_name("field") +
                     operator.set_results_name("cmp_op") +
                     val.setResultsName("value"))
+
+    # allows unique error messages to be thrown
+    def validate_stmt(tokens):
+        fld = tokens["field"]
+        op = tokens["cmp_op"]
+        raw_val = tokens["value"]
+
+        if fld not in utils.fields:
+            # invalid field name
+            raise ValueError(utils.exceptions["invalid_field"])
+
+        if op not in utils.comparison_operators:
+            # invalid operator symbol
+            raise ValueError(utils.exceptions["invalid_operator"])
+
+        if not utils.operator_supported_for(fld, op):
+            # operator not allowed for this field type
+            raise ValueError(utils.exceptions["invalid_operator"])
+
+        try:
+            utils.coerce_param(fld, raw_val)
+        except ValueError:
+            # parameter type mismatch for field
+            raise ValueError(utils.exceptions["invalid_parameter_type"])
+        except Exception:
+            # parameter could not be interpreted
+            raise ValueError(utils.exceptions["invalid_parameter"])
+
+        return tokens
+
+    stmt.add_parse_action(validate_stmt)
     return stmt
 
 # EXPRESSION := <lhs-stmt> <logical-op> <rhs-stmt>
@@ -32,6 +64,13 @@ def build_expr():
     expr = (build_stmt().set_results_name("left") +
             (_and | _or).set_results_name("op") +
             build_stmt().set_results_name("right"))
+
+    def validate_expr(tokens):
+        # if either side raised during its own validation, pyparsing will surface it.
+        # labels side specific errors
+        return tokens
+
+    expr.add_parse_action(validate_expr)
     return expr
 
 def parse_stmt(query):
@@ -40,8 +79,11 @@ def parse_stmt(query):
 
 def parse_expr(query):
     expr = build_expr()
-    return expr.parse_string(query, parseAll=True)
-
+    try:
+        return expr.parse_string(query, parseAll=True)
+    except pp.ParseException:
+        # invalid syntax error
+        raise ValueError(utils.exceptions["invalid_query_syntax"])
 
 def parse_query(query):
     try:
