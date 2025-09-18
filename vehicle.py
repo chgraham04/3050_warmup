@@ -18,7 +18,7 @@ class Vehicle:
             mileage=source.get("mileage"),
             make=source.get("make"),
             model=source.get("model"),
-            type=source.get("body_type"),
+            type=source.get("body_type", source.get("type")),
             trim=source.get("trim")
         )
 
@@ -35,3 +35,7 @@ class Vehicle:
             "type" :self.type,
             "trim": self.trim
         }
+    
+    # vehicle toString
+    def show_vehicle(self):
+        return f"| {self.make + ' ' + self.model:<23} | {self.price:<9} | {self.mileage:<12} | {self.trim or '':<11} | {self.type:<12} | {self.vin:<20} |"

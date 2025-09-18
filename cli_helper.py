@@ -13,7 +13,7 @@ from utils import fields, operators, exceptions, coerce_param, operator_supporte
 DB CONNECT
 """
 
-def find_sdk_key(filename="sdk_key.json"):
+def find_sdk_key(filename="../sdk_key.json"):
     """
     Look ONLY in the directory where this file (cli_helper.py) lives.
     """
