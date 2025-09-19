@@ -35,3 +35,4 @@ class Vehicle:
             "type" :self.type,
             "trim": self.trim
         }
+    
