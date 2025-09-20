@@ -82,7 +82,8 @@ def validate_stmt(stmt):
         raise ValueError(utils.exceptions["invalid_operator"])
 
     try:
-        utils.coerce_param(fld, raw_val)
+        coerced = utils.coerce_param(fld, raw_val)
+        stmt["value"] = coerced
     except ValueError:
         # parameter type mismatch for field
         raise ValueError(utils.exceptions["invalid_parameter_type"])
@@ -115,4 +116,5 @@ def isolate_parsed_stmt(parsed_stmt):
 print(parse_query('type = SUV'))
 print(parse_query('type = "SUV" || type = "Truck"'))
 print(parse_query('price < 25000 and make = "Toyota"'))
+
 
