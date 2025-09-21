@@ -2,7 +2,7 @@
 #i cna get rid of this if parser returns a singular version of and / or
 import pyparsing as pp
 from utils import HELP_TEXT, WELCOME_MESSAGE
-from query import parse_query
+from parser import parse_query
 from google.cloud.firestore_v1.base_query import FieldFilter, Or
 
  # vehicle toString for printing vehicle information
@@ -90,3 +90,4 @@ def help_message():
    return HELP_TEXT.strip()
 def welcome_messsage():
     return WELCOME_MESSAGE.strip()
+
