@@ -7,7 +7,7 @@ fields = {
     "make":    {"type": "string", "coerce": str},
     "model":   {"type": "string", "coerce": str},
     "type":    {"type": "string", "coerce": str},
-    # "trim":    {"type": "string" | None, "coerce": str | None},
+    "trim":    {"type": "string", "coerce": str},
     "help":    {"command": True}
 }
 

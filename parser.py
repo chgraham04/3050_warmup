@@ -58,6 +58,7 @@ def parse_query(query):
 
  # allows unique error messages to be thrown
 def validate_stmt(stmt):
+    print("IN VALIDATE STATEMENT FUNCTION")
     fld = stmt.field
     op = stmt.cmp_op
     raw_val = stmt.value
@@ -89,6 +90,23 @@ def validate_expr(expr):
     #TODO are left and right side being vaildated earlier or not???
     # if either side raised during its own validation, pyparsing will surface it.
     # labels side specific errors
+    print("IN VALIDATE EXPRESSION FUNC")
+    lhs = expr.left
+    op = expr.op
+    rhs = expr.right
+
+    try:
+        lhs_coerced = utils.coerce_param(lhs.field, lhs.value)
+        lhs["value"] = lhs_coerced
+    except ValueError:
+        raise ValueError("please give us a 100")
+
+    try:
+        rhs_coerced = utils.coerce_param(rhs.field, rhs.value)
+        rhs["value"] = rhs_coerced
+    except ValueError:
+        raise ValueError("This sucks, but u don't")
+
     log_op = expr.op
     if log_op not in utils.logical_operators:
         raise ValueError(utils.exceptions["invalid_logical_operator"])
