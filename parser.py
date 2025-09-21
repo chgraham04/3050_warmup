@@ -58,7 +58,6 @@ def parse_query(query):
 
  # allows unique error messages to be thrown
 def validate_stmt(stmt):
-    print("IN VALIDATE STATEMENT FUNCTION")
     fld = stmt.field
     op = stmt.cmp_op
     raw_val = stmt.value
@@ -90,7 +89,6 @@ def validate_expr(expr):
     #TODO are left and right side being vaildated earlier or not???
     # if either side raised during its own validation, pyparsing will surface it.
     # labels side specific errors
-    print("IN VALIDATE EXPRESSION FUNC")
     lhs = expr.left
     op = expr.op
     rhs = expr.right
@@ -99,12 +97,14 @@ def validate_expr(expr):
         lhs_coerced = utils.coerce_param(lhs.field, lhs.value)
         lhs["value"] = lhs_coerced
     except ValueError:
+        # TODO: change this error message
         raise ValueError("please give us a 100")
 
     try:
         rhs_coerced = utils.coerce_param(rhs.field, rhs.value)
         rhs["value"] = rhs_coerced
     except ValueError:
+        # TODO: change this error message
         raise ValueError("This sucks, but u don't")
 
     log_op = expr.op
@@ -121,18 +121,8 @@ def validate_expr(expr):
 def isolate_parsed_stmt(parsed_stmt):
     return parsed_stmt[0]
 
-# TODO: build predicate and process the parsed string
-
 
 print(parse_query('type = SUV'))
 print(parse_query('type = "SUV" || type = "Truck"'))
 print(parse_query('price < 25000 and make = "Toyota"'))
 
-# When you want to get just one side of an expression,
-# or have a single stmt that doesn't need to be w/in
-# a bigger list
-# parsed_stmt is the return from parse_stmt
-def isolate_parsed_stmt(parsed_stmt):
-    return parsed_stmt[0]
-
-# TODO: build predicate and process the parsed string
