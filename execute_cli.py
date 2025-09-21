@@ -2,16 +2,18 @@
 Organize logical navigation through CLI
 call functions defined in cli_helper.py
 """
-
-from cli_helper import open_firestore_db, run_query, help_message, welcome_messsage
+from admin import open_firestore_db
+from cli_helper import run_query, help_message, welcome_messsage
 from vehicle import Vehicle
- 
+
 def print_results(rows):
     total = len(rows)
     if total == 0:
         print("No results.")
         return
     print(f"{total} result(s):")
+    print(f"  | {"Make & Model":<23} | {"Price ($)":<9} | {"Mileage (mi)":<12} | {"Trim":<11} | {"Type":<12} | {"VIN":<20} |")
+    print("  " + "-" * 106)
     print(f"  | {"Make & Model":<23} | {"Price ($)":<9} | {"Mileage (mi)":<12} | {"Trim":<11} | {"Type":<12} | {"VIN":<20} |")
     print("  " + "-" * 106)
     for r in rows:

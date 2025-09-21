@@ -7,6 +7,7 @@ fields = {
     "make":    {"type": "string", "coerce": str},
     "model":   {"type": "string", "coerce": str},
     "type":    {"type": "string", "coerce": str},
+    # "trim":    {"type": "string" | None, "coerce": str | None},
     "help":    {"command": True}
 }
 
@@ -22,17 +23,19 @@ def _or(a, b):     return a or b
 NUMERIC = {"int"}      # operators valid for numbers
 STRING  = {"string"}   # operators valid for strings
 
-operators = {
+comparison_operators = {
     "<":  {"fn": _cmp_lt, "allowed_types": NUMERIC},
     ">":  {"fn": _cmp_gt, "allowed_types": NUMERIC},
     "<=": {"fn": _cmp_le, "allowed_types": NUMERIC},
     ">=": {"fn": _cmp_ge, "allowed_types": NUMERIC},
     "=":  {"fn": _cmp_eq, "allowed_types": NUMERIC | STRING},
+    "==": {"fn": _cmp_eq, "allowed_types": NUMERIC | STRING},
 }
-
 logical_operators = {
-    "&":  {"fn": _and,    "is_logical": True},
-    "||": {"fn": _or,     "is_logical": True},
+    "&":   {"fn": _and, "is_logical": True},
+    "and": {"fn": _and, "is_logical": True},
+    "||":  {"fn": _or,  "is_logical": True},
+    "or":  {"fn": _or,  "is_logical": True},
 }
 
 # error catches
@@ -63,10 +66,10 @@ def operator_supported_for(field_name, op):
     meta = fields.get(field_name)
     if not meta:
         return False
-    opmeta = operators.get(op)
+    opmeta = comparison_operators.get(op)
     if not opmeta:
         return False
-    if opmeta.get("is_logical"):
+    if logical_operators.get(op):
         return True
     allowed = opmeta.get("allowed_types")
     return meta["type"] in allowed if allowed else False
@@ -81,12 +84,13 @@ Fields:
   - make (string)
   - model (string)
   - type (string)
+  - trim (string)    (optional value)
 
 Operators:
   - <, >, <=, >=     (numeric comparisons: price, mileage)
   - =                (numeric or string equality)
-  - &                (logical AND between conditions)
-  - ||               (logical OR between conditions)
+  - &, and           (logical AND between conditions)
+  - ||, or            (logical OR between conditions)
 
 Examples:
   price >= 12000 & mileage < 90000
@@ -101,7 +105,7 @@ Notes:
 WELCOME_MESSAGE = """
 Welcome to our navigational interface for used car shopping! 
 
-To get starrted querying, type "help" to display all features of the query language. When you are finished, simply type
+To get started querying, type "help" to display all features of the query language. When you are finished, simply type
 "quit" or "exit" to terminate the program.
 
 MAKE SURE your firestore cloud key is titled "sdk_key.json" and is located inside the parent directory of this project.
