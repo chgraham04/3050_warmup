@@ -1,4 +1,4 @@
-from query import parse_query, parse_stmt, isolate_parsed_stmt
+from parser import parse_query, parse_stmt, isolate_parsed_stmt
 import pyparsing as pp
 
 from utils import operator_supported_for, logical_operators
