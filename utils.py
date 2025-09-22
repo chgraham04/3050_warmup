@@ -2,6 +2,7 @@
 
 # data fields
 fields = {
+    # TODO: do we need both VIN and vin?
     "vin":     {"type": "string", "coerce": str},
     "price":   {"type": "int",    "coerce": int},
     "mileage": {"type": "int",    "coerce": int},
