@@ -4,6 +4,7 @@
 fields = {
     "price":   {"type": "int",    "coerce": int},
     "mileage": {"type": "int",    "coerce": int},
+    "VIN":     {"type": "string", "coerce": str},
     "make":    {"type": "string", "coerce": str},
     "model":   {"type": "string", "coerce": str},
     "type":    {"type": "string", "coerce": str},
