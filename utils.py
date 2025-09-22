@@ -2,6 +2,7 @@
 
 # data fields
 fields = {
+    "vin":     {"type": "string", "coerce": str},
     "price":   {"type": "int",    "coerce": int},
     "mileage": {"type": "int",    "coerce": int},
     "VIN":     {"type": "string", "coerce": str},
