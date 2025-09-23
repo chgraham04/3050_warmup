@@ -69,6 +69,7 @@ def validate_stmt(stmt):
     if op not in utils.comparison_operators:
         # invalid operator symbol
         raise ValueError(utils.exceptions["invalid_operator"])
+    
 
     if not utils.operator_supported_for(fld, op):
         # operator not allowed for this field type
@@ -77,6 +78,9 @@ def validate_stmt(stmt):
     try:
         coerced = utils.coerce_param(fld, raw_val)
         stmt["value"] = coerced
+        if op == '=':
+            stmt["cmp_op"] = '=='
+
     except ValueError:
         # parameter type mismatch for field
         raise ValueError(utils.exceptions["invalid_parameter_type"])
@@ -96,6 +100,8 @@ def validate_expr(expr):
     try:
         lhs_coerced = utils.coerce_param(lhs.field, lhs.value)
         lhs["value"] = lhs_coerced
+        if lhs.cmp_op == '=':
+            expr.left["cmp_op"] = '=='
     except ValueError:
         # TODO: change this error message
         raise ValueError("please give us a 100")
@@ -103,6 +109,8 @@ def validate_expr(expr):
     try:
         rhs_coerced = utils.coerce_param(rhs.field, rhs.value)
         rhs["value"] = rhs_coerced
+        if rhs.cmp_op == '=':
+            expr.right["cmp_op"] = '=='
     except ValueError:
         # TODO: change this error message
         raise ValueError("This sucks, but u don't")
