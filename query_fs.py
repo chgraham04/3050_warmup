@@ -1,5 +1,3 @@
-#from admin import open_firestore_db
-#i cna get rid of this if parser returns a singular version of and / or
 import pyparsing as pp
 from utils import HELP_TEXT, WELCOME_MESSAGE
 from parser import parse_query
@@ -24,8 +22,8 @@ def build_query(raw, db):
     #parse query using parser.py
     query_lst = parse_query(raw)
     print ("Parsed Query:", query_lst)
-
     
+
     try: 
         #check if the parsed query is a compound (and)
         if query_lst.op == (pp.Literal("&") | pp.CaselessKeyword("and")):
