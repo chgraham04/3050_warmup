@@ -49,12 +49,15 @@ def parse_expr(query):
 
 def parse_query(query):
     try:
-        stmt = parse_stmt(query)
-        isolated_stmt = isolate_parsed_stmt(stmt)
-        return validate_stmt(isolated_stmt)
-    except Exception:
         expr = parse_expr(query)
         return validate_expr(expr)
+    except Exception:
+        try:
+            stmt = parse_stmt(query)
+            isolated_stmt = isolate_parsed_stmt(stmt)
+            return validate_stmt(isolated_stmt)
+        except ValueError as e:
+            print(e)
 
  # allows unique error messages to be thrown
 def validate_stmt(stmt):
@@ -97,6 +100,9 @@ def validate_expr(expr):
     op = expr.op
     rhs = expr.right
 
+    validate_stmt(lhs)
+    validate_stmt(rhs)
+
     try:
         lhs_coerced = utils.coerce_param(lhs.field, lhs.value)
         lhs["value"] = lhs_coerced
@@ -130,7 +136,4 @@ def isolate_parsed_stmt(parsed_stmt):
     return parsed_stmt[0]
 
 
-print(parse_query('type = SUV'))
-print(parse_query('type = "SUV" || type = "Truck"'))
-print(parse_query('price < 25000 and make = "Toyota"'))
 
