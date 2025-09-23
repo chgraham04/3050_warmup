@@ -43,11 +43,12 @@ logical_operators = {
 
 # error catches
 exceptions = {
-    "invalid_field":           "Invalid field name.",
-    "invalid_parameter":       "Invalid parameter value.",
-    "invalid_parameter_type":  "Parameter type does not match field type.",
-    "invalid_operator":        "Invalid or unsupported operator.",
-    "invalid_query_syntax":    "Query syntax is invalid.",
+    "invalid_field":            "Invalid field name.",
+    "invalid_parameter":        "Invalid parameter value.",
+    "invalid_parameter_type":   "Parameter type does not match field type.",
+    "invalid_operator":         "Invalid or unsupported operator.",
+    "invalid_logical_operator": "Invalid or unsupported logical operator.",
+    "invalid_query_syntax":     "Query syntax is invalid.",
 }
 
 # helper func
@@ -72,8 +73,6 @@ def operator_supported_for(field_name, op):
     opmeta = comparison_operators.get(op)
     if not opmeta:
         return False
-    if logical_operators.get(op):
-        return True
     allowed = opmeta.get("allowed_types")
     return meta["type"] in allowed if allowed else False
 
@@ -96,22 +95,25 @@ Operators:
   - ||, or            (logical OR between conditions)
 
 Examples:
+  mileage < 25000  
   price >= 12000 & mileage < 90000
-  make = "Toyota" & model = "Camry"
-  type = "SUV" || type = "Truck"
+  make = Toyota & model = Highlander
+  make = Toyota and model = Highlander
+  type = SUV || type = Crossover
+  type = SUV or type = Crossover
 
 Notes:
-  • String values can be quoted; unquoted strings are accepted as-is.
-  • For numeric fields, values must be valid integers.
+  • Multi-word values require quotation marks
+  • Numeric fields require valid integers. (price, mileage)
 """
 
 WELCOME_MESSAGE = """
 Welcome to our navigational interface for used car shopping! 
 
-To get started querying, type "help" to display all features of the query language. When you are finished, simply type
-"quit" or "exit" to terminate the program.
+To get started querying, type "help" to display all features of the query language. 
+When you are finished, simply type "quit" or "exit" to terminate the program.
 
-MAKE SURE your firestore cloud key is titled "sdk_key.json" and is located inside the parent directory of this project.
+MAKE SURE your firestore cloud key is titled "sdk_key.json" 
+and is located inside the parent directory of this project.
 
-Happy Querying :)
 """
