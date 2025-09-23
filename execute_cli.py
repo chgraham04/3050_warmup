@@ -12,9 +12,7 @@ def print_results(rows):
         print("No results.")
         return
     print(f"{total} result(s):")
-    print(f"  | {"Make & Model":<23} | {"Price ($)":<9} | {"Mileage (mi)":<12} | {"Trim":<11} | {"Type":<12} | {"VIN":<20} |")
-    print("  " + "-" * 106)
-    print(f"  | {"Make & Model":<23} | {"Price ($)":<9} | {"Mileage (mi)":<12} | {"Trim":<11} | {"Type":<12} | {"VIN":<20} |")
+    print(f"  | {"Make & Model":<23} | {"Price":<9} | {"Mileage (mi)":<12} | {"Trim":<11} | {"Type":<12} | {"VIN":<20} |")
     print("  " + "-" * 106)
     for r in rows:
         v = Vehicle.from_dict(r)
