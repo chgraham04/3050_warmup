@@ -6,8 +6,8 @@ import utils
 #       statements use a comparison operator between
 #       a certain field and a value to test against
 def build_stmt():
-    field = pp.oneOf(utils.fields)
-    operator = pp.oneOf(utils.comparison_operators)
+    field = pp.oneOf(list(utils.fields.keys())) # CHECK KEYS NOT JUST FIELDS
+    operator = pp.oneOf(list(utils.comparison_operators.keys())) # CHECK KEYS
 
     # need to accept different types of value inputs
     word_value = pp.Word(pp.alphanums)
@@ -18,7 +18,7 @@ def build_stmt():
     # stmt format
     stmt = pp.Group(field.set_results_name("field") +
                     operator.set_results_name("cmp_op") +
-                    val.setResultsName("value"))
+                    val.set_results_name("value"))
     return stmt
 
 # EXPRESSION := <lhs-stmt> <logical-op> <rhs-stmt>
@@ -29,35 +29,47 @@ def build_expr():
     _or = pp.Literal("||") | pp.CaselessKeyword("or")
 
     # expr format
-    expr = (build_stmt().set_results_name("left") +
+    expr = pp.Group((build_stmt().set_results_name("left") +
             (_and | _or).set_results_name("op") +
-            build_stmt().set_results_name("right"))
+            build_stmt().set_results_name("right")))
     return expr
 
 def parse_stmt(query):
-    stmt = build_stmt()
-    return stmt.parse_string(query, parseAll=True)
+    # return the grouped statement (index [0])
+    return build_stmt().parse_string(query, parseAll=True)[0]
 
 def parse_expr(query):
-    expr = build_expr()
-    try:
-        return expr.parse_string(query, parseAll=True)
-    except Exception:
-        # invalid syntax error
-        raise ValueError
+    # got rid of original try/except here, no need for exception handling
+    # if an error occurs, it will be caught by validation functions
+
+    # return the grouped expression (index [0])
+    return build_expr().parse_string(query, parseAll=True)[0]
 
 
 def parse_query(query):
+    # try:
+    #     expr = parse_expr(query)
+    #     return validate_expr(expr)
+    # except Exception:
+    #     try:
+    #         stmt = parse_stmt(query)
+    #         isolated_stmt = isolate_parsed_stmt(stmt)
+    #         return validate_stmt(isolated_stmt)
+    #     except ValueError as e:
+    #         print(e)
+    # Try expression first so "a & b" isn't misread as a single stmt
     try:
+        # getting error here is normal, needed for filtering stmt vs. expr
         expr = parse_expr(query)
-        return validate_expr(expr)
-    except Exception:
+        return validate_expr(expr)  # needs to return error if not expr
+    except pp.ParseException: # not an expression
+        # try single statement
         try:
             stmt = parse_stmt(query)
-            isolated_stmt = isolate_parsed_stmt(stmt)
-            return validate_stmt(isolated_stmt)
-        except ValueError as e:
-            print(e)
+            return validate_stmt(stmt)
+        except pp.ParseException as pe:
+            # throw error here
+            raise ValueError(f"{utils.exceptions['invalid_query_syntax']}")
 
  # allows unique error messages to be thrown
 def validate_stmt(stmt):
@@ -93,36 +105,23 @@ def validate_stmt(stmt):
     return stmt
 
 def validate_expr(expr):
-    #TODO are left and right side being vaildated earlier or not???
-    # if either side raised during its own validation, pyparsing will surface it.
-    # labels side specific errors
-    lhs = expr.left
-    op = expr.op
-    rhs = expr.right
-
-    validate_stmt(lhs)
-    validate_stmt(rhs)
-
+    """
+        Validate an expression by validating each side as a statement,
+        then checking the logical operator. Do NOT re-coerce here
+        """
+    # Validate each side; surface side-specific errors
     try:
-        lhs_coerced = utils.coerce_param(lhs.field, lhs.value)
-        lhs["value"] = lhs_coerced
-        if lhs.cmp_op == '=':
-            expr.left["cmp_op"] = '=='
-    except ValueError:
-        # TODO: change this error message
-        raise ValueError("please give us a 100")
-
+        validate_stmt(expr.left)
+    except ValueError as e:
+        raise ValueError(f"Left side: {e}")
     try:
-        rhs_coerced = utils.coerce_param(rhs.field, rhs.value)
-        rhs["value"] = rhs_coerced
-        if rhs.cmp_op == '=':
-            expr.right["cmp_op"] = '=='
-    except ValueError:
-        # TODO: change this error message
-        raise ValueError("This sucks, but u don't")
+        validate_stmt(expr.right)
+    except ValueError as e:
+        raise ValueError(f"Right side: {e}")
 
-    log_op = expr.op
-    if log_op not in utils.logical_operators:
+    # Not working correctly still, not sure why
+    log_op = str(expr.op).lower()  # op is a string
+    if log_op not in utils.logical_operators.keys():
         raise ValueError(utils.exceptions["invalid_logical_operator"])
 
     return expr

@@ -1,6 +1,8 @@
 import pyparsing as pp
 import utils
 from parser import parse_query
+from parser import validate_stmt as _validate_stmt
+from parser import validate_expr as _validate_expr
 from google.cloud.firestore_v1.base_query import FieldFilter, Or
 
  # vehicle toString for printing vehicle information
@@ -112,37 +114,21 @@ def welcome_messsage():
 """ validate input functions """
 
 def stmt_validation(stmt):
-    fld = stmt.field
-    op = stmt.cmp_op
-    raw_val = stmt.value
-
-    if fld not in utils.fields:
-        # invalid field name
-        raise ValueError(utils.exceptions["invalid_field"])
-
-    if op not in utils.comparison_operators:
-        # invalid operator symbol
-        raise ValueError(utils.exceptions["invalid_operator"])
-
-    if not utils.operator_supported_for(fld, op):
-        # operator not allowed for this field type
-        raise ValueError(utils.exceptions["invalid_operator"])
-
-    try:
-        coerced = utils.coerce_param(fld, raw_val)
-        stmt["value"] = coerced
-        if op == '=':
-            stmt["cmp_op"] = '=='
-
-    except ValueError:
-        # parameter type mismatch for field
-        raise ValueError(utils.exceptions["invalid_parameter_type"])
-    except Exception:
-        # parameter could not be interpreted
-        raise ValueError(utils.exceptions["invalid_parameter"])
-    return stmt
+    return _validate_stmt(stmt)
 
 def expr_validation(expr):
-    for item in expr:
-        print(item)
+    # validate each side; if an error occurs, tell which side broke
+    try:
+        stmt_validation(expr.left)
+    except ValueError as e:
+        raise ValueError(f"Left side: {e}")
+
+    try:
+        stmt_validation(expr.right)
+    except ValueError as e:
+        raise ValueError(f"Right side: {e}")
+
+    op = str(expr.op).lower()
+    if op not in utils.logical_operators:
+        raise ValueError(utils.exceptions["invalid_logical_operator"])
     return expr
