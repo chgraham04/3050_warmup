@@ -37,5 +37,5 @@ class Vehicle:
         }
     
     # vehicle toString
-    def show_vehicle(self):
-        return f"| {self.make + ' ' + self.model:<23} | {self.price:<9} | {self.mileage:<12} | {self.trim or '':<11} | {self.type:<12} | {self.vin:<20} |"
+    def format_vehicle(self):
+        return f"| {self.make + ' ' + self.model:<23} | ${self.price:<9.2f} | {self.mileage:<12} | {self.trim or '':<11} | {self.type:<12} | {self.vin:<20} |"

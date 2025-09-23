@@ -18,7 +18,7 @@ def print_results(rows):
     print("  " + "-" * 106)
     for r in rows:
         v = Vehicle.from_dict(r)
-        print("  " + v.show_vehicle())
+        print("  " + v.format_vehicle())
     print("  " + "-" * 106)
 
 def execute_cli():
