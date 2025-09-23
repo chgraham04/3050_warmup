@@ -54,9 +54,21 @@ def test_cmp_ops_on_price():
     queries = []
     price = 9226
     for op in comparison_operators:
-        for field in fields:
-            if fields[field].get("type") == "int":
-                queries.append(f"{field} {op} {price}")
-    print(queries)
-    # results = build_query(query, db)
-    # vins = [r.id for r in results]
+        queries.append(f"price {op} {price}")
+
+    results = [{q: run_query(q, db)} for q in queries]
+
+    # print(results)
+    for r in results:
+        print(r)
+
+def test_cmp_ops_on_mileage():
+    queries = []
+    mileage = 226514
+    for op in comparison_operators:
+        queries.append(f"mileage {op} {mileage}")
+
+    results = [{q: run_query(q, db)} for q in queries]
+
+    for r in results:
+        print(r)
