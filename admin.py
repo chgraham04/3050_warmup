@@ -37,7 +37,6 @@ def upload_data():
             vinID = v_object.vin
             #return the Vehicle object back to a dictionary with choosen attributes
             v_dict = v_object.to_dict()
-            #print(v_dict)
 
             # Add a new doc in collection 'Vehicles' with vinID
             firestore_db.collection("Vehicles").document(vinID).set(v_dict)

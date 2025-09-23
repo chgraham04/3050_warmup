@@ -28,7 +28,6 @@ def build_query(raw, db):
     #check if the parsed query is a compound (and)
     if query_lst.op == (pp.Literal("&") | pp.CaselessKeyword("and")):
         valid_expr = expr_validation(query_lst)
-        print(valid_expr)
 
         #splits the query_lst into comparison filters
         #each filter takes a field, cmp_op, and value
@@ -40,7 +39,6 @@ def build_query(raw, db):
     #check if the parsed query is a compound (or)
     elif query_lst.op == (pp.Literal("||") | pp.CaselessKeyword("or")):
         valid_expr = expr_validation(query_lst)
-        print(valid_expr)
 
         #splits the query_lst into comparison filters
         #each filter takes a field, cmp_op, and value
@@ -52,7 +50,6 @@ def build_query(raw, db):
     # assume parsed query is a statement
     else:
         valid_stmt = stmt_validation(query_lst)
-        print(valid_stmt)
 
         #check if the field is VIN and if so directly query the database to get doc snap
         if query_lst.field == "VIN":
@@ -117,18 +114,4 @@ def stmt_validation(stmt):
     return _validate_stmt(stmt)
 
 def expr_validation(expr):
-    # validate each side; if an error occurs, tell which side broke
-    try:
-        stmt_validation(expr.left)
-    except ValueError as e:
-        raise ValueError(f"Left side: {e}")
-
-    try:
-        stmt_validation(expr.right)
-    except ValueError as e:
-        raise ValueError(f"Right side: {e}")
-
-    op = str(expr.op).lower()
-    if op not in utils.logical_operators:
-        raise ValueError(utils.exceptions["invalid_logical_operator"])
-    return expr
+    return _validate_expr(expr)

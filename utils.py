@@ -2,8 +2,6 @@
 
 # data fields
 fields = {
-    # TODO: do we need both VIN and vin?
-    "vin":     {"type": "string", "coerce": str},
     "price":   {"type": "int",    "coerce": int},
     "mileage": {"type": "int",    "coerce": int},
     "VIN":     {"type": "string", "coerce": str},
@@ -48,7 +46,9 @@ exceptions = {
     "invalid_parameter_type":   "Parameter type does not match field type.",
     "invalid_operator":         "Invalid or unsupported operator.",
     "invalid_logical_operator": "Invalid or unsupported logical operator.",
-    "invalid_query_syntax":     "Query syntax is invalid.",
+    "invalid_query_syntax":     "Query syntax is invalid. \n"
+                                "Example: make = Toyota\n"
+                                "Type help for more information",
 }
 
 # helper func
@@ -81,12 +81,13 @@ HELP_TEXT = """
 Used-Car Listing Query Language
 
 Fields:
-  - price (int)
+  - price   (int)
   - mileage (int)
-  - make (string)
-  - model (string)
-  - type (string)
-  - trim (string)    (optional value)
+  - make    (string)
+  - model   (string)
+  - type    (string)
+  - trim    (string)    (optional value)
+  - vin     (string)
 
 Operators:
   - <, >, <=, >=     (numeric comparisons: price, mileage)
