@@ -7,7 +7,7 @@ Backend logic for CLI (no typing imports)
 import os
 import pyparsing as pp
 
-from utils import fields, operators, exceptions, coerce_param, operator_supported_for, HELP_TEXT, WELCOME_MESSAGE
+# from utils import fields, operators, exceptions, coerce_param, operator_supported_for, HELP_TEXT, WELCOME_MESSAGE
 
 def build_predicate(query_str):
     parse_fn = getattr(expr, "parse_string", None) or getattr(expr, "parseString")

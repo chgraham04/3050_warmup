@@ -1,5 +1,3 @@
-#from admin import open_firestore_db
-#i cna get rid of this if parser returns a singular version of and / or
 import pyparsing as pp
 from utils import HELP_TEXT, WELCOME_MESSAGE
 from parser import parse_query
@@ -13,7 +11,6 @@ def format_vehicle(v, id):
     model = v.get("model", "")
     vtype = v.get("type", "")
     trim  = v.get("trim", "")
-    #vin   = v.get("vin", "")
     vin = id
     return f"| {make + ' ' + model:<23} | {price:<9} | {mileage:<12} | {trim or '':<11} | {vtype:<12} | {vin:<20} |"
    
@@ -21,23 +18,40 @@ def format_vehicle(v, id):
 def build_query(raw, db):
     #open database collection of Vehicles
     db_v = open_db_collection(db)
+
+    #parse query using parser.py
     query_lst = parse_query(raw)
     print ("Parsed Query:", query_lst)
+    
 
     try: 
-        #is it possible to guarentee parse query only returns "and" or "or"??
+        #check if the parsed query is a compound (and)
         if query_lst.op == (pp.Literal("&") | pp.CaselessKeyword("and")):
-        #elif query_lst[1].lower == "and":
+            #splits the query_lst into comparison filters 
+            #each filter takes a field, cmp_op, and value
             filterF1 = query_lst[0].field, query_lst[0].cmp_op, query_lst[0].value
             filterF2 = query_lst[2].field, query_lst[2].cmp_op, query_lst[2].value
+            
             return and_query_fs(filterF1, filterF2, db_v)
-
+        
+        #check if the parsed query is a compound (or)
         elif query_lst.op == (pp.Literal("||") | pp.CaselessKeyword("or")):
-        #elif query_lst.lower == "or":
+            #splits the query_lst into comparison filters 
+            #each filter takes a field, cmp_op, and value
             filterF1 = query_lst[0].field, query_lst[0].cmp_op, query_lst[0].value
             filterF2 = query_lst[2].field, query_lst[2].cmp_op, query_lst[2].value
+            
             return or_query_fs(filterF1, filterF2, db_v)
+        
+        #assume parsed query is a statement 
         else:
+            #check if the field is VIN and if so directly query the database to get doc snap 
+            if query_lst.field == "VIN":
+                VIN_lst = []
+                docu_snap = db_v.document(query_lst.value).get()
+                VIN_lst.append(docu_snap)
+                return VIN_lst
+            # if field not VIN run query_fs taking parameters field, cmp_op, value, and database of Vehicles
             return query_fs(query_lst.field, query_lst.cmp_op, query_lst.value, db_v)
     except Exception as e:
         return (F" Error in query: {e}")
@@ -60,30 +74,22 @@ def or_query_fs(input1, input2, db_v):
 def query_fs(field,op,value, db_v):
     rets = (db_v.where(filter=FieldFilter(field, op, value)))
     return rets.stream()
+
 """
 FIRESTORE Data Access
 """
 def open_db_collection(db):
     vehicle_ref = db.collection("Vehicles")
     return vehicle_ref      
-"""
-def fetch_all_vehicles(db):
-    docs = db.collection("Vehicles").stream()
-    vehicles = []
-    for d in docs:
-        data = d.to_dict() or {}
-        data["vin"] = d.id
-        vehicles.append(data)
-    return vehicles
-"""
-# run query should be modified to work with funct in query.py
+
+
 def run_query(raw, db):
     rows = build_query(raw, db)
     vehicle_rows = []
+    # formats returned list of document snaps into a list of Vehicle dictionaries
     for r in rows:
         vehicle_rows.append(format_vehicle(r.to_dict(), r.id))
     return vehicle_rows
-
 
 # display messages
 def help_message():

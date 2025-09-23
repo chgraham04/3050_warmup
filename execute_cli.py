@@ -3,8 +3,7 @@ Organize logical navigation through CLI
 call functions defined in cli_helper.py
 """
 from admin import open_firestore_db
-from cli_helper import run_query, help_message, welcome_messsage
-from vehicle import Vehicle
+from query_fs import run_query, help_message, welcome_messsage
 
 def print_results(rows):
     total = len(rows)
@@ -13,10 +12,10 @@ def print_results(rows):
         return
     print(f"{total} result(s):")
     print(f"  | {"Make & Model":<23} | {"Price":<9} | {"Mileage (mi)":<12} | {"Trim":<11} | {"Type":<12} | {"VIN":<20} |")
+    print(f' | {"Make & Model":<23} | {"Price ($)":<9} | {"Mileage (mi)":<12} | {"Trim":<11} | {"Type":<12} | {"VIN":<20} |')
     print("  " + "-" * 106)
     for r in rows:
-        v = Vehicle.from_dict(r)
-        print("  " + v.format_vehicle())
+        print("  " + r)
     print("  " + "-" * 106)
 
 def execute_cli():
@@ -43,7 +42,7 @@ def execute_cli():
 
         # QUERY HANDLING
         try:
-            rows, _ = run_query(db, raw)
+            rows = run_query(raw, db)
             print_results(rows)
         except Exception as e:
             print(f"Error: {e}")
