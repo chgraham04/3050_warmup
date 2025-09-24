@@ -21,6 +21,7 @@ def execute_cli():
     db = open_firestore_db()
     print(welcome_messsage())
 
+    # Get user input
     while True:
         try:
             raw = input("> ").strip()

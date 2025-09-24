@@ -9,7 +9,7 @@ def open_firestore_db():
     from firebase_admin import firestore
 
     # Use the sdk credentials
-    cred = credentials.Certificate('sdk_key.json') # grabs key from parent local folder
+    cred = credentials.Certificate('group_4_sdk_key.json') # grabs key from parent local folder
 
     # Initialize access to firestore database
     firebase_admin.initialize_app(cred)
@@ -30,12 +30,12 @@ def upload_data():
             "----------------\n"
             "----------------\n")
         for v_data in range(len(usedCarData)):
-            #create a Vehicle object from one listing
+            # create a Vehicle object from one listing
             v_object = Vehicle.from_dict(usedCarData[v_data])
 
-            #get the vin to use as unique ID and create document
+            # get the vin to use as unique ID and create document
             vinID = v_object.vin
-            #return the Vehicle object back to a dictionary with choosen attributes
+            # return the Vehicle object back to a dictionary with chosen attributes
             v_dict = v_object.to_dict()
 
             # Add a new doc in collection 'Vehicles' with vinID

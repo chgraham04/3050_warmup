@@ -114,7 +114,7 @@ Welcome to our navigational interface for used car shopping!
 To get started querying, type "help" to display all features of the query language. 
 When you are finished, simply type "quit" or "exit" to terminate the program.
 
-MAKE SURE your firestore cloud key is titled "sdk_key.json" 
+MAKE SURE your firestore cloud key is titled "group_4_sdk_key.json" 
 and is located inside the parent directory of this project.
 
 """
