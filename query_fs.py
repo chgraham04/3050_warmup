@@ -1,9 +1,11 @@
+from parser import (
+    parse_query,
+    validate_stmt as _validate_stmt,
+    validate_expr as _validate_expr
+)
 import pyparsing as pp
-import utils
-from parser import parse_query
-from parser import validate_stmt as _validate_stmt
-from parser import validate_expr as _validate_expr
 from google.cloud.firestore_v1.base_query import FieldFilter, Or
+import utils
 
  # vehicle toString for printing vehicle information
 def format_vehicle(v, id):
@@ -14,7 +16,9 @@ def format_vehicle(v, id):
     vtype = v.get("type", "")
     trim  = v.get("trim", "")
     vin = id
-    return f"| {make + ' ' + model:<23} | {price:<9} | {mileage:<12} | {trim or '':<11} | {vtype:<12} | {vin:<20} |"
+    return (f"| {make + ' ' + model:<23} | {price:<9} "
+            f"| {mileage:<12} | {trim or '':<11} "
+            f"| {vtype:<12} | {vin:<20} |")
    
 
 def build_query(raw, db):
@@ -28,29 +32,30 @@ def build_query(raw, db):
     if query_lst.op == (pp.Literal("&") | pp.CaselessKeyword("and")):
         # splits the query_lst into comparison filters
         # each filter takes a field, cmp_op, and value
-        filterF1 = query_lst[0].field, query_lst[0].cmp_op, query_lst[0].value
-        filterF2 = query_lst[2].field, query_lst[2].cmp_op, query_lst[2].value
+        filter_f1 = query_lst[0].field, query_lst[0].cmp_op, query_lst[0].value
+        filter_f2 = query_lst[2].field, query_lst[2].cmp_op, query_lst[2].value
 
-        return and_query_fs(filterF1, filterF2, db_v)
+        return and_query_fs(filter_f1, filter_f2, db_v)
 
     # check if the parsed query is a compound (or)
     elif query_lst.op == (pp.Literal("||") | pp.CaselessKeyword("or")):
         # splits the query_lst into comparison filters
         # each filter takes a field, cmp_op, and value
-        filterF1 = query_lst[0].field, query_lst[0].cmp_op, query_lst[0].value
-        filterF2 = query_lst[2].field, query_lst[2].cmp_op, query_lst[2].value
+        filter_f1 = query_lst[0].field, query_lst[0].cmp_op, query_lst[0].value
+        filter_f2 = query_lst[2].field, query_lst[2].cmp_op, query_lst[2].value
 
-        return or_query_fs(filterF1, filterF2, db_v)
+        return or_query_fs(filter_f1, filter_f2, db_v)
 
     # assume parsed query is a statement
     else:
         #check if the field is VIN and if so directly query the database to get doc snap
         if query_lst.field == "VIN":
-            VIN_lst = []
+            vin_lst = []
             docu_snap = db_v.document(query_lst.value).get()
-            VIN_lst.append(docu_snap)
-            return VIN_lst
-        # if field not VIN run query_fs taking parameters field, cmp_op, value, and database of Vehicles
+            vin_lst.append(docu_snap)
+            return vin_lst
+        # if field not VIN run query_fs taking parameters
+        # field, cmp_op, value, and database of Vehicles
         return query_fs(query_lst.field, query_lst.cmp_op, query_lst.value, db_v)
 
 """
@@ -78,8 +83,7 @@ FIRESTORE Data Access
 """
 def open_db_collection(db):
     vehicle_ref = db.collection("Vehicles")
-    return vehicle_ref      
-
+    return vehicle_ref
 
 def run_query(raw, db):
     rows = build_query(raw, db)
@@ -95,7 +99,7 @@ def run_query(raw, db):
 
 # display messages
 def help_message():
-   return utils.HELP_TEXT.strip()
+    return utils.HELP_TEXT.strip()
 def welcome_messsage():
     return utils.WELCOME_MESSAGE.strip()
 
@@ -103,7 +107,6 @@ def welcome_messsage():
 """ 
 Validate input functions
 """
-
 def stmt_validation(stmt):
     return _validate_stmt(stmt)
 

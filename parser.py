@@ -112,6 +112,3 @@ def validate_expr(expr):
 # unnests stmt from list
 def isolate_parsed_stmt(parsed_stmt):
     return parsed_stmt[0]
-
-
-

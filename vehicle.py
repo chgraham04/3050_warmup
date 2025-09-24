@@ -1,5 +1,5 @@
 class Vehicle:
-    # constructor
+    # constructor for document type Vehicle
     def __init__(self, vin, price, mileage, make, model, type, trim=None):
         self.vin = vin
         self.price = price

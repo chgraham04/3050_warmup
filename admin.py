@@ -1,8 +1,9 @@
 import json
 import sys
 from vehicle import Vehicle
+# admin program to upload the used car data to google firestore
 
-
+# access firestore database using credentials
 def open_firestore_db():
     import firebase_admin
     from firebase_admin import credentials
@@ -17,29 +18,30 @@ def open_firestore_db():
     return db
 
 
+# upload the actual vehicle data to the database
 def upload_data():
     firestore_db = open_firestore_db()
     json_file = sys.argv[1]
     try:
         with open(json_file, encoding = 'utf8') as f:
-            usedCarData = json.load(f)
+            used_car_data = json.load(f)
             print ("----------------\n"
             "----------------\n"
             "--LOAD SUCCESS--\n"
             "--BEGIN UPLOAD--\n"
             "----------------\n"
             "----------------\n")
-        for v_data in range(len(usedCarData)):
+        for v_data in range(len(used_car_data)):
             # create a Vehicle object from one listing
-            v_object = Vehicle.from_dict(usedCarData[v_data])
+            v_object = Vehicle.from_dict(used_car_data[v_data])
 
             # get the vin to use as unique ID and create document
-            vinID = v_object.vin
+            vin_id = v_object.vin
             # return the Vehicle object back to a dictionary with chosen attributes
             v_dict = v_object.to_dict()
 
             # Add a new doc in collection 'Vehicles' with vinID
-            firestore_db.collection("Vehicles").document(vinID).set(v_dict)
+            firestore_db.collection("Vehicles").document(vin_id).set(v_dict)
         print ("----------------\n"
             "----------------\n"
             "---SUCCESSFUL---\n"
@@ -48,10 +50,7 @@ def upload_data():
             "----------------\n")
     except FileNotFoundError:
         print(f"Error:File '{json_file} not found.")
-        
-        
+
 
 if __name__ == "__main__":
     upload_data()
-
-
